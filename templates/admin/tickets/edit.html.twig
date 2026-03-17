@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>Modifier Ticket</h1>
+{{ form_start(ticketForm) }}
+{{ form_widget(ticketForm) }}
+<button class="btn btn-primary">Enregistrer</button>
+{{ form_end(ticketForm) }}
+{% endblock %}
