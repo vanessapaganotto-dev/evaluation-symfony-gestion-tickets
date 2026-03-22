@@ -1,6 +1,32 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Accueil - Gestion de tickets{% endblock %}
+
 {% block body %}
-<h1>🔥 Ma page fonctionne !</h1>
-<p>Symfony + Twig est prêt.</p>
+<div class="container mt-5">
+    <h1 class="mb-4">Créer un ticket</h1>
+    
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+    
+    <div class="row">
+        <div class="col-md-6">
+            {{ form_start(ticketForm) }}
+                {{ form_row(ticketForm.auteur) }}
+                {{ form_row(ticketForm.description) }}
+                {{ form_row(ticketForm.categorie) }}
+                <button type="submit" class="btn btn-primary">Envoyer le ticket</button>
+            {{ form_end(ticketForm) }}
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Déjà un compte ?</h5>
+                    <a href="{{ path('app_login') }}" class="btn btn-outline-primary">Se connecter</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

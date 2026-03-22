@@ -1,13 +1,48 @@
-{# templates/base.html.twig #}
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Tickets{% endblock %}</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <title>{% block title %}Gestion Tickets{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap/5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     {% block stylesheets %}{% endblock %}
 </head>
 <body>
-    {% block body %}{% endblock %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{{ path('app_home') }}">Gestion Tickets</a>
+            
+            {% if app.user %}
+                <div class="navbar-nav ms-auto">
+                    <span class="nav-item nav-link text-light">Bonjour, {{ app.user.email }}</span>
+                    
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a class="nav-item nav-link" href="{{ path('admin_categories_index') }}">Catégories</a>
+                        {# <a class="nav-item nav-link" href="{{ path('admin_etats_index') }}">États</a> #}
+                    {% endif %}
+                    
+                    {% if is_granted('ROLE_USER') or is_granted('ROLE_ADMIN') %}
+                        <a class="nav-item nav-link" href="{{ path('ticket_new') }}">Nouveau Ticket</a>
+                    {% endif %}
+                    {% if is_granted('ROLE_USER') or is_granted('ROLE_ADMIN') %}
+                    <a class="nav-item nav-link" href="{{ path('ticket_new') }}">Nouveau Ticket</a>
+                    <a class="nav-item nav-link" href="{{ path('ticket_list') }}">Liste des tickets</a>
+                    {% endif %}
+                    
+                    <a class="nav-item nav-link" href="{{ path('app_logout') }}">Se déconnecter</a>
+                </div>
+            {% else %}
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-item nav-link" href="{{ path('app_login') }}">Se connecter</a>
+                </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        {% block body %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap/5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block javascripts %}{% endblock %}
 </body>
 </html>

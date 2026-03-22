@@ -19,9 +19,13 @@ class Kernel extends BaseKernel
         $container->import('../config/{services}_'.$this->environment.'.yaml');
     }
 
-    protected function configureRoutes(RoutingConfigurator $routes): void
-    {
-        $routes->import('../config/{routes}/*.yaml');
-        $routes->import('../config/{routes}/'.$this->environment.'/*.yaml');
-    }
+   protected function configureRoutes(RoutingConfigurator $routes): void
+{
+    // Import de routes.yaml (fichier principal)
+    $routes->import('../config/routes.yaml');
+    
+    // Import des fichiers dans le dossier routes/
+    $routes->import('../config/{routes}/*.yaml');
+    $routes->import('../config/{routes}/'.$this->environment.'/*.yaml');
+}
 }

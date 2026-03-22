@@ -17,10 +17,10 @@ class Ticket
     #[Assert\Email]
     private ?string $auteur = null; // email client
 
-    #[ORM\Column(type:"datetime")]
+    #[ORM\Column(type:"datetime_immutable")]
     private ?\DateTimeInterface $dateOuverture = null; // date ouverture auto
 
-    #[ORM\Column(type:"datetime", nullable:true)]
+    #[ORM\Column(type:"datetime_immutable", nullable:true)]
     private ?\DateTimeInterface $dateCloture = null; // date fermeture admin
 
     #[ORM\Column(type:"text")]

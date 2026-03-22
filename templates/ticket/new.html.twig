@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un ticket{% endblock %}
+
+{% block body %}
+<h1>Créer un ticket</h1>
+
+{{ form_start(ticketForm) }}
+    {{ form_row(ticketForm.auteur) }}
+    {{ form_row(ticketForm.description) }}
+    {{ form_row(ticketForm.categorie) }}
+    <button type="submit">Envoyer</button> 
+{{ form_end(ticketForm) }}
+
+{% endblock %}
