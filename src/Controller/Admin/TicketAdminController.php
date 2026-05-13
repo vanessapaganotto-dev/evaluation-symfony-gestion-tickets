@@ -44,11 +44,12 @@ class TicketAdminController extends AbstractController
         }
 
         return $this->render('admin/tickets/new.html.twig', [
+            'ticket' => $ticket,
             'form' => $form->createView(),
         ]);
     }
 
-    #[Route('/{id}', name: 'admin_tickets_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'admin_tickets_show', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function show(Ticket $ticket): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
@@ -58,7 +59,7 @@ class TicketAdminController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'admin_tickets_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'admin_tickets_edit', methods: ['GET', 'POST'], requirements: ['id' => '\d+'])]
     public function edit(Request $request, Ticket $ticket, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
@@ -81,7 +82,7 @@ class TicketAdminController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'admin_tickets_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'admin_tickets_delete', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function delete(Request $request, Ticket $ticket, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
