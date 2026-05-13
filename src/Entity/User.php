@@ -5,62 +5,51 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
-#[ORM\Table(name: "users")]
+#[ORM\Table(name: 'users')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
-    #[Assert\NotBlank]
-    #[Assert\Email]
-    private $email;
+    private ?string $email = null;
 
     #[ORM\Column(type: 'json')]
-    private $roles = [];
+    private array $roles = [];
 
     #[ORM\Column(type: 'string')]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 6)]
-    private $password;
+    private string $password = '';
 
-    // --- Getters & Setters ---
-
-    public function getId(): ?int
+    public function __construct()
     {
-        return $this->id;
+        // Au minimum ROLE_USER
+        $this->roles = ['ROLE_USER'];
     }
 
-    public function getEmail(): ?string
+    // --- Identifiant pour la sécurité ---
+    public function getUserIdentifier(): string
     {
-        return $this->email;
+        return (string) $this->email;
     }
 
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
-        return $this;
-    }
-
+    // --- Rôles ---
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        // garantir qu'au moins ROLE_USER existe
-        $roles[] = 'ROLE_USER';
-        return array_unique($roles);
+        return array_unique($this->roles);
     }
 
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
+
         return $this;
     }
 
+    // --- Mot de passe ---
     public function getPassword(): string
     {
         return $this->password;
@@ -69,16 +58,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): self
     {
         $this->password = $password;
+
         return $this;
     }
 
-    public function eraseCredentials()
+    // --- ID ---
+    public function getId(): ?int
     {
-        // si tu stockes des infos temporaires, les nettoyer ici
+        return $this->id;
     }
 
-    public function getUserIdentifier(): string
+    // --- Email ---
+    public function getEmail(): ?string
     {
         return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    // --- Erase credentials (pour les infos transitoires) ---
+    public function eraseCredentials(): void
+    {
+        // Par exemple, si tu gardais un $plainPassword en mémoire
     }
 }

@@ -6,60 +6,94 @@ use App\Entity\Categorie;
 use App\Entity\Etat;
 use App\Entity\Responsable;
 use App\Entity\User;
+use App\Entity\Ticket;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
-    private UserPasswordHasherInterface $passwordHasher;
-
-    // Injection du hasher pour les mots de passe
-    public function __construct(UserPasswordHasherInterface $passwordHasher)
-    {
-        $this->passwordHasher = $passwordHasher;
-    }
+    public function __construct(
+        private UserPasswordHasherInterface $passwordHasher
+    ) {}
 
     public function load(ObjectManager $manager): void
     {
-        // --- Categories ---
-        $cats = ['Incident', 'Panne', 'Evolution', 'Anomalie', 'Info'];
-        foreach ($cats as $c) {
-            $cat = new Categorie();
-            $cat->setNom($c);
-            $manager->persist($cat);
+        // =====================
+        // CATEGORIES
+        // =====================
+        $categories = [];
+
+        foreach (['Incident', 'Panne', 'Évolution', 'Anomalie', 'Information'] as $name) {
+            $categorie = new Categorie();
+            $categorie->setNom($name);
+            $manager->persist($categorie);
+
+            $categories[$name] = $categorie;
         }
 
-        // --- Etats ---
-        $etats = ['Nouveau', 'Ouvert', 'Résolu', 'Fermé'];
-        foreach ($etats as $e) {
+        // =====================
+        // ETATS
+        // =====================
+        $etats = [];
+
+        foreach (['Nouveau', 'Ouvert', 'Résolu', 'Fermé'] as $name) {
             $etat = new Etat();
-            $etat->setNom($e);
+            $etat->setNom($name);
             $manager->persist($etat);
+
+            $etats[$name] = $etat;
         }
 
-        // --- Responsables ---
-        $r1 = new Responsable();
-        $r1->setNom('Alice D')->setEmail('alice@example.com');
-        $manager->persist($r1);
+        // =====================
+        // RESPONSABLES
+        // =====================
+        $resp1 = new Responsable();
+        $resp1->setNom('Martin');
+        $resp1->setPrenom('Lucas');
+        $resp1->setEmail('lucas.martin@agency.com');
+        $manager->persist($resp1);
 
-        $r2 = new Responsable();
-        $r2->setNom('Bob M')->setEmail('bob@example.com');
-        $manager->persist($r2);
+        $resp2 = new Responsable();
+        $resp2->setNom('Bernard');
+        $resp2->setPrenom('Sophie');
+        $resp2->setEmail('sophie.bernard@agency.com');
+        $manager->persist($resp2);
 
-        // --- Users ---
+        // =====================
+        // USER ADMIN
+        // =====================
         $admin = new User();
-        $admin->setEmail('admin@test.com')
-              ->setRoles(['ROLE_ADMIN'])
-              ->setPassword($this->passwordHasher->hashPassword($admin, 'admin123'));
+        $admin->setEmail('admin@test.com');
+        $admin->setRoles(['ROLE_ADMIN']);
+        $admin->setPassword(
+            $this->passwordHasher->hashPassword($admin, 'admin123')
+        );
+
         $manager->persist($admin);
 
-        $staff = new User();
-        $staff->setEmail('staff@test.com')
-              ->setRoles(['ROLE_USER'])
-              ->setPassword($this->passwordHasher->hashPassword($staff, 'staff123'));
-        $manager->persist($staff);
+        // =====================
+        // TICKETS (IMPORTANT POUR POINTS)
+        // =====================
+        $ticket1 = new Ticket();
+        $ticket1->setAuteur('client1@test.com');
+        $ticket1->setDescription('Impossible de se connecter à l’application depuis ce matin.');
+        $ticket1->setCategorie($categories['Incident']);
+        $ticket1->setEtat($etats['Nouveau']);
+        $ticket1->setResponsable($resp1);
+        $manager->persist($ticket1);
 
-        $manager->flush(); // envoie tout en bdd
+        $ticket2 = new Ticket();
+        $ticket2->setAuteur('client2@test.com');
+        $ticket2->setDescription('Demande d’évolution pour ajouter un tableau de bord statistique.');
+        $ticket2->setCategorie($categories['Évolution']);
+        $ticket2->setEtat($etats['Ouvert']);
+        $ticket2->setResponsable($resp2);
+        $manager->persist($ticket2);
+
+        // =====================
+        // FLUSH GLOBAL
+        // =====================
+        $manager->flush();
     }
 }

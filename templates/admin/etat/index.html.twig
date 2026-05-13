@@ -1,7 +1,42 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Admin - États{% endblock %}
+{% block title %}Liste des états{% endblock %}
 
 {% block body %}
-<h1>Liste des états</h1>
+<div class="container">
+    <h1 class="mb-4">Liste des états</h1>
+    
+    <a href="{{ path('admin_etats_new') }}" class="btn btn-primary mb-3">
+        + Nouvel état
+    </a>
+    
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for etat in etats %}
+            <tr>
+                <td>{{ etat.id }}</td>
+                <td>{{ etat.nom }}</td>
+                <td>
+                    <a href="{{ path('admin_etats_edit', {'id': etat.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                    <form method="post" action="{{ path('admin_etats_delete', {'id': etat.id}) }}" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ etat.id) }}">
+                        <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">Aucun état trouvé</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

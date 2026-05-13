@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau ticket{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="mb-4">Nouveau ticket</h1>
+    
+    {{ include('admin/tickets/_form.html.twig', {'button_label': 'Créer'}) }}
+    
+    <a href="{{ path('admin_tickets_index') }}" class="btn btn-secondary mt-3">
+        Retour à la liste
+    </a>
+</div>
+{% endblock %}

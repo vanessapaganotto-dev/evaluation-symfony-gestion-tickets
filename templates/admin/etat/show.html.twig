@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de l'état{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="mb-4">Détails de l'état</h1>
+    
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ etat.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ etat.nom }}</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <a href="{{ path('admin_etats_edit', {'id': etat.id}) }}" class="btn btn-warning">Modifier</a>
+    <a href="{{ path('admin_etats_index') }}" class="btn btn-secondary ms-2">Retour à la liste</a>
+</div>
+{% endblock %}

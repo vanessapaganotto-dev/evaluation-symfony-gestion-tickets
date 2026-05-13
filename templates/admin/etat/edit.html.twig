@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier l'état{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="mb-4">Modifier l'état</h1>
+    
+    {{ include('admin/etats/_form.html.twig', {'button_label': 'Modifier'}) }}
+    
+    <a href="{{ path('admin_etats_index') }}" class="btn btn-secondary mt-3">
+        Retour à la liste
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le responsable{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="mb-4">Modifier le responsable</h1>
+    
+    {{ include('admin/responsables/_form.html.twig', {'button_label': 'Modifier'}) }}
+    
+    <a href="{{ path('admin_responsables_index') }}" class="btn btn-secondary mt-3">
+        Retour à la liste
+    </a>
+</div>
+{% endblock %}

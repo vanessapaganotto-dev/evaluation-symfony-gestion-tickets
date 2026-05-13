@@ -3,13 +3,17 @@
 {% block title %}Créer un ticket{% endblock %}
 
 {% block body %}
-<h1>Créer un ticket</h1>
+    <h1>Créer un ticket</h1>
 
-{{ form_start(ticketForm) }}
-    {{ form_row(ticketForm.auteur) }}
-    {{ form_row(ticketForm.description) }}
-    {{ form_row(ticketForm.categorie) }}
-    <button type="submit">Envoyer</button> 
-{{ form_end(ticketForm) }}
+    {{ form_start(ticketForm) }}
+        {{ form_row(ticketForm.auteur) }}
+        {{ form_row(ticketForm.description) }}
+        {{ form_row(ticketForm.categorie) }}
 
+        <div class="d-flex justify-content-end mt-3">
+            <button type="submit" class="btn btn-primary">
+                Envoyer
+            </button>
+        </div>
+    {{ form_end(ticketForm) }}
 {% endblock %}

@@ -1,7 +1,46 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Admin - Responsables{% endblock %}
+{% block title %}Liste des responsables{% endblock %}
 
 {% block body %}
-<h1>Liste des responsables</h1>
+<div class="container">
+    <h1 class="mb-4">Liste des responsables</h1>
+    
+    <a href="{{ path('admin_responsables_new') }}" class="btn btn-primary mb-3">
+        + Nouveau responsable
+    </a>
+    
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for responsable in responsables %}
+            <tr>
+                <td>{{ responsable.id }}</td>
+                <td>{{ responsable.nom }}</td>
+                <td>{{ responsable.prenom }}</td>
+                <td>{{ responsable.email }}</td>
+                <td>
+                    <a href="{{ path('admin_responsables_edit', {'id': responsable.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                    <form method="post" action="{{ path('admin_responsables_delete', {'id': responsable.id}) }}" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ responsable.id) }}">
+                        <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">Aucun responsable trouvé</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

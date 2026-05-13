@@ -3,7 +3,7 @@ namespace App\Controller;
 
 use App\Entity\Ticket;
 use App\Entity\Etat;
-use App\Form\TicketType;
+use App\Form\TicketPublicType;  // ← CHANGÉ ICI
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,9 +16,9 @@ class HomeController extends AbstractController
     public function index(Request $request, EntityManagerInterface $em): Response
     {
         $ticket = new Ticket();
-        $ticket->setDateOuverture(new \DateTimeImmutable());
         
-        $form = $this->createForm(TicketType::class, $ticket);
+        // ✅ FIX : $form = 
+        $form = $this->createForm(TicketPublicType::class, $ticket);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

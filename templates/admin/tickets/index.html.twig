@@ -1,17 +1,81 @@
-{# templates/ticket/index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Tickets{% endblock %}
+{% block title %}Liste des tickets{% endblock %}
 
 {% block body %}
-<h1>Ma page Ticket</h1>
+<div class="container mt-4">
 
-{% for message in app.flashes('success') %}
-    <div class="alert alert-success">{{ message }}</div>
-{% endfor %}
+    <h1 class="mb-4">Liste des tickets</h1>
 
-{{ form_start(ticketForm) }}
-{{ form_widget(ticketForm) }}
-<button type="submit" class="btn btn-primary">Créer le ticket</button>
-{{ form_end(ticketForm) }}
+    {# 🔥 flash messages (IMPORTANT pour interaction utilisateur) #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <a href="{{ path('admin_tickets_new') }}" class="btn btn-primary mb-3">
+        + Nouveau ticket
+    </a>
+
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Auteur</th>
+                <th>Description</th>
+                <th>Catégorie</th>
+                <th>État</th>
+                <th>Responsable</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for ticket in tickets %}
+            <tr>
+                <td>{{ ticket.id }}</td>
+                <td>{{ ticket.auteur }}</td>
+                <td>{{ ticket.description|slice(0, 50) }}{% if ticket.description|length > 50 %}...{% endif %}</td>
+                <td>{{ ticket.categorie.nom }}</td>
+                <td>{{ ticket.etat.nom }}</td>
+                <td>
+                    {{ ticket.responsable ? ticket.responsable.nom : 'Non assigné' }}
+                </td>
+
+                <td>
+                    <a href="{{ path('admin_tickets_show', {'id': ticket.id}) }}" class="btn btn-sm btn-info">
+                        Voir
+                    </a>
+
+                    <a href="{{ path('admin_tickets_edit', {'id': ticket.id}) }}" class="btn btn-sm btn-warning">
+                        Modifier
+                    </a>
+
+                    <form method="post"
+                          action="{{ path('admin_tickets_delete', {'id': ticket.id}) }}"
+                          style="display:inline;"
+                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce ticket ?');">
+
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ ticket.id) }}">
+
+                        <button class="btn btn-sm btn-danger">
+                            Supprimer
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7" class="text-center">
+                    Aucun ticket trouvé
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
 {% endblock %}

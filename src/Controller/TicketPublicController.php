@@ -1,11 +1,13 @@
 <?php
+
 namespace App\Controller;
 
 use App\Entity\Ticket;
 use App\Entity\Etat;
-use App\Form\TicketType; 
+use App\Form\TicketPublicType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -16,9 +18,8 @@ class TicketPublicController extends AbstractController
     public function new(Request $request, EntityManagerInterface $em): Response
     {
         $ticket = new Ticket();
-        $ticket->setDateOuverture(new \DateTimeImmutable());
 
-        $form = $this->createForm(TicketType::class, $ticket);
+        $form = $this->createForm(TicketPublicType::class, $ticket);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -39,8 +40,8 @@ class TicketPublicController extends AbstractController
         ]);
     }
 
-    // ✅ MÉTHODE À AJOUTER
     #[Route('/tickets', name: 'ticket_list')]
+    #[IsGranted('ROLE_ADMIN')] // Protection ajoutée : accès restreint aux admins
     public function list(EntityManagerInterface $em): Response
     {
         $tickets = $em->getRepository(Ticket::class)->findBy(

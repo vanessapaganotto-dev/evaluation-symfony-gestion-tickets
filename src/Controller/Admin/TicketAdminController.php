@@ -3,46 +3,106 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Ticket;
-use App\Entity\Etat;
-use App\Form\TicketType;
+use App\Form\Admin\TicketAdminType;
+use App\Repository\TicketRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route('/admin/tickets')]
 class TicketAdminController extends AbstractController
 {
-    #[Route('/ticket/new', name: 'ticket_new')]
-    public function new(Request $request, EntityManagerInterface $em): Response
+    #[Route('/', name: 'admin_tickets_index', methods: ['GET'])]
+    public function index(TicketRepository $ticketRepository): Response
     {
-        $ticket = new Ticket();
-        $ticket->setDateOuverture(new \DateTime()); // date ouverture automatique
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        $form = $this->createForm(TicketType::class, $ticket);
+        return $this->render('admin/tickets/index.html.twig', [
+            'tickets' => $ticketRepository->findAll(),
+        ]);
+    }
+
+    #[Route('/new', name: 'admin_tickets_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $ticket = new Ticket();
+        $form = $this->createForm(TicketAdminType::class, $ticket);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // Définir l'état par défaut "Nouveau"
-            $etat = $em->getRepository(Etat::class)->findOneBy(['nom' => 'Nouveau']);
-            $ticket->setEtat($etat);
+            $entityManager->persist($ticket);
+            $entityManager->flush();
 
-            // Pas de responsable assigné au départ
-            $ticket->setResponsable(null);
+            $this->addFlash('success', 'Ticket créé avec succès.');
 
-            // Persister et enregistrer en base
-            $em->persist($ticket);
-            $em->flush();
-
-            $this->addFlash('success', 'Votre ticket a été créé avec succès !');
-
-            // Redirection après création (vers accueil ou liste tickets)
-            return $this->redirect('/');
+            return $this->redirectToRoute('admin_tickets_index');
         }
 
-        return $this->render('ticket/new.html.twig', [
-            'ticketForm' => $form->createView(),
+        return $this->render('admin/tickets/new.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/{id}', name: 'admin_tickets_show', methods: ['GET'])]
+    public function show(Ticket $ticket): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        return $this->render('admin/tickets/show.html.twig', [
+            'ticket' => $ticket,
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'admin_tickets_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Ticket $ticket, EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $form = $this->createForm(TicketAdminType::class, $ticket);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Ticket modifié avec succès.');
+
+            return $this->redirectToRoute('admin_tickets_index');
+        }
+
+        return $this->render('admin/tickets/edit.html.twig', [
+            'ticket' => $ticket,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/{id}', name: 'admin_tickets_delete', methods: ['POST'])]
+    public function delete(Request $request, Ticket $ticket, EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        if ($this->isCsrfTokenValid('delete'.$ticket->getId(), $request->request->get('_token'))) {
+
+            $entityManager->remove($ticket);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Ticket supprimé avec succès.');
+        }
+
+        return $this->redirectToRoute('admin_tickets_index');
+    }
+
+    #[Route('/debug-user', name: 'debug_user')]
+    public function debugUser(): Response
+    {
+        return $this->json([
+            'user' => $this->getUser()?->getUserIdentifier(),
+            'roles' => $this->getUser()?->getRoles(),
         ]);
     }
 }

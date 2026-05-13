@@ -2,19 +2,41 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 class Etat
 {
-    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type:"integer")]
-    private ?int $id = null; // id état
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type:"string", length:100)]
-    private ?string $nom = null; // nom état (Nouveau, Ouvert...)
+    #[ORM\Column(length: 50)]
+    private ?string $nom = null;
 
-    // ----------------- GETTERS / SETTERS -----------------
-    public function getId(): ?int { return $this->id; } 
+    #[ORM\OneToMany(mappedBy: 'etat', targetEntity: Ticket::class)]
+    private Collection $tickets;
+
+    public function __construct()
+    {
+        $this->tickets = new ArrayCollection();
+    }
+
+    public function getId(): ?int { return $this->id; }
+
     public function getNom(): ?string { return $this->nom; }
-    public function setNom(string $nom): self { $this->nom = $nom; return $this; }
+
+    public function setNom(string $nom): self
+    {
+        $this->nom = $nom;
+        return $this;
+    }
+
+    public function getTickets(): Collection
+    {
+        return $this->tickets;
+    }
 }

@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvel état{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="mb-4">Nouvel état</h1>
+    
+    {{ include('admin/etats/_form.html.twig', {'button_label': 'Créer'}) }}
+    
+    <a href="{{ path('admin_etats_index') }}" class="btn btn-secondary mt-3">
+        Retour à la liste
+    </a>
+</div>
+{% endblock %}

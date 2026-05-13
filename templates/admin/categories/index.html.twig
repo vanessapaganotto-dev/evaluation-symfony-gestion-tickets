@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des catégories{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="mb-4">Liste des catégories</h1>
+    
+    <a href="{{ path('admin_categories_new') }}" class="btn btn-primary mb-3">
+        + Nouvelle catégorie
+    </a>
+    
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for categorie in categories %}
+            <tr>
+                <td>{{ categorie.id }}</td>
+                <td>{{ categorie.nom }}</td>
+                <td>
+                    {# Lien pour modifier #}
+                    <a href="{{ path('admin_categories_edit', {id: categorie.id}) }}" class="btn btn-sm btn-warning">
+                        Modifier
+                    </a>
+                    
+                    {# Formulaire pour supprimer (indispensable pour la méthode POST et le jeton CSRF) #}
+                    <form method="post" action="{{ path('admin_categories_delete', {'id': categorie.id}) }}" style="display:inline-block" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ categorie.id) }}">
+                        <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" class="text-center">Aucune catégorie trouvée</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <a href="{{ path('app_home') }}" class="btn btn-secondary">Retour à l'accueil</a>
+</div>
+{% endblock %}
